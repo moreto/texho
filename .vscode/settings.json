@@ -1,0 +1,12 @@
+{
+  "[dart]": {
+    "editor.rulers": [120],
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "dart.lineLength": 120,
+  "workbench.editor.openPositioning": "last",
+  "terminal.integrated.fontFamily": "MesloLGS NF",
+}
