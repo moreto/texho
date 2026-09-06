@@ -8,7 +8,7 @@ import 'package:texho_app/features/home/ui/home_viewmodel.dart';
 import 'routes.dart';
 
 GoRouter router() => GoRouter(
-  initialLocation: Routes.login,
+  initialLocation: Routes.home,
   // debugLogDiagnostics: true,
   // redirect: _redirect,
   // refreshListenable: authRepository,

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:texho_commons/texho_commons.dart';
 import 'package:texho_service/api/api_core.dart';
 import 'package:texho_service/api/enum.dart';
 import 'package:texho_service/api/http_service_exception_model.dart';
@@ -26,14 +27,12 @@ class DioProvider {
   DioProvider.of(this._apiCore) {
     _header = _apiCore.isLogged ? Header.buildHeadersLoggedUser() : Header.buildHeaders();
     _url = _apiCore.des + _apiCore.endpoint;
-    if (kProfileMode) {
-      _url = _apiCore.hm + _apiCore.endpoint;
-    } else if (kReleaseMode) {
+    if (kReleaseMode) {
       _url = _apiCore.prd + _apiCore.endpoint;
     }
   }
 
-  Future<Map<String, dynamic>> request({
+  Future<Result<Map<String, dynamic>>> request({
     required Verb verb,
     dynamic pathParam,
     dynamic queryParam,
@@ -92,13 +91,11 @@ class DioProvider {
             onSendProgress: (count, total) => _sendProgress(count, total),
           );
           break;
-        default:
-          throw HttpServiceException(code: 299, message: 'verboInvalido');
       }
-      return _response.data;
+      return Result.ok(Map<String, dynamic>.from(_response.data as Map));
     } on DioException catch (e) {
       if (e.type == DioExceptionType.cancel) {
-        return {};
+        return Result.ok({});
       }
       _response = e.response ?? _response;
 
@@ -112,42 +109,40 @@ class DioProvider {
       );
     } finally {
       int status = _response.statusCode ?? 500;
-      var resp = _response.data;
-
       stopWatch.stop();
       var elapsedSeconds = stopWatch.elapsed.inSeconds;
       var elapsedMilliseconds = stopWatch.elapsed.inMilliseconds;
 
-      Log.print(
+      TexhoLog.print(
         '${_apiCore.endpoint}, s: $elapsedSeconds, ms: $elapsedMilliseconds',
-        titulo: 'Provider ${verb.name.toUpperCase()} $status',
+        title: 'Provider ${verb.name.toUpperCase()} $status',
       );
-      if (body != null) Log.printJson(body, titulo: 'Provider Body');
-      if (pathParam != null) Log.print(pathParam.toString(), titulo: 'Provider Param');
+      if (body != null) TexhoLog.printJson(body, title: 'Provider Body');
+      if (pathParam != null) TexhoLog.print(pathParam.toString(), title: 'Provider Param');
       // Log.printJson(resp.toString().substring(0, 500), titulo: 'Provider Response');
     }
   }
 
-  cancel() {
+  void cancel() {
     bool isCancel = _cancelToken.isCancelled;
     if (!isCancel) {
       _cancelToken.cancel();
     }
   }
 
-  _receiveProgress(count, total) async {
+  Future<void> _receiveProgress(count, total) async {
     bytes.addAll({
       'download': {'count': count, 'total': total},
     });
   }
 
-  _sendProgress(count, total) async {
+  Future<void> _sendProgress(count, total) async {
     bytes.addAll({
       'upload': {'count': count, 'total': total},
     });
   }
 
-  _nonNull(Map body) {
+  Map<dynamic, dynamic> _nonNull(Map body) {
     body.removeWhere((key, value) => value == null || value == '');
     return body;
   }

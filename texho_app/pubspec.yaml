@@ -40,6 +40,13 @@ dependencies:
   get_it: ^9.2.1
   intl: any
 
+  texho_service:
+    path: ../texho_service
+
+  texho_commons:
+    path: ../texho_commons
+  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,6 +1,5 @@
-name: texho_service
+name: texho_commons
 description: "A new Flutter project."
-publish_to: none
 version: 0.0.1
 homepage:
 
@@ -12,11 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  dio: ^5.11.1
-
-  texho_commons:
-    path: ../texho_commons
-
+  intl: any
 
 dev_dependencies:
   flutter_test:
